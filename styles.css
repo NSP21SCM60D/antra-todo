@@ -1,0 +1,19 @@
+:root {
+    --tan: #e6e2d3;
+    --traffic-white: #f0f0f0;
+    --yellow-green: #4caf50;
+    --red: #c94c4c;
+    --blue: #008cba;
+}
+
+* {
+    vertical-align: baseline;
+    font-weight: inherit;
+    font-family: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    border: 0 none;
+    outline: 0;
+    padding: 0;
+    margin: 0;
+}

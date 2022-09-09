@@ -16,14 +16,16 @@ export const onTodoSubmit = async (event: SubmitEvent) => {
 
 const getButton = (elem: HTMLElement): HTMLButtonElement | null => {
     let check: HTMLElement | null = elem;
-    while (check !== null && !(check instanceof HTMLButtonElement)) {
-        check = elem.parentElement;
+    while (check && !(check instanceof HTMLButtonElement)) {
+        check = check.parentElement;
     }
     return check;
 };
 
 export const onTodoClick = async (event: Event) => {
-    console.log("got click");
+    event.preventDefault();
+    event.stopPropagation();
+
     if (!(event.target instanceof HTMLElement)) return;
 
     const button = getButton(event.target);
@@ -47,7 +49,34 @@ export const onTodoClick = async (event: Event) => {
         case "toggle":
             await onToggleCompleted(id);
             break;
+
+        default:
+            break;
     }
+};
+
+export const onEditEnter = async (event: KeyboardEvent) => {
+    if (event.key !== "Enter") return;
+
+    event.stopPropagation();
+
+    const input = document.activeElement;
+
+    if (!(input instanceof HTMLInputElement)) return;
+
+    const parent = input.parentElement;
+
+    if (!(parent instanceof HTMLLIElement)) return;
+
+    const id = parent.dataset.id;
+    if (id === undefined) return;
+
+    const todo = parseInt(id);
+    const title = input.value;
+
+    if (isNaN(todo)) return;
+
+    await model.editTitle(todo, title);
 };
 
 const onEditClick = async (id: string, input: HTMLInputElement | null) => {
@@ -124,8 +153,6 @@ const completedListItem = ({ id, title }: Todo, isEditing: ReadonlySet<number>) 
 
 export const createRenderer = (pending: HTMLOListElement, completed: HTMLOListElement) => {
     return (todos: readonly Todo[], isEditing: ReadonlySet<number>) => {
-        console.log("new todos");
-
         const pendingItems = todos
             .filter(t => !t.completed)
             .map(t => pendingListItem(t, isEditing));

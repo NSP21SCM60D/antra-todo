@@ -1,6 +1,6 @@
 import { subscribe } from "./modules/subscription.js";
 import { init } from "./modules/state.js";
-import { createRenderer, onTodoClick, onTodoSubmit } from "./modules/handlers.js";
+import { createRenderer, onTodoClick, onTodoSubmit, onEditEnter } from "./modules/handlers.js";
 
 const pending = document.querySelector<HTMLOListElement>("#pending ol");
 const completed = document.querySelector<HTMLOListElement>("#completed ol");
@@ -18,9 +18,11 @@ init().then(() => {
 
     if (pending) {
         pending.onclick = onTodoClick;
+        pending.onkeyup = onEditEnter;
     }
 
     if (completed) {
         completed.onclick = onTodoClick;
+        completed.onkeyup = onEditEnter;
     }
 });

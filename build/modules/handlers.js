@@ -21,14 +21,15 @@ export const onTodoSubmit = (event) => __awaiter(void 0, void 0, void 0, functio
 });
 const getButton = (elem) => {
     let check = elem;
-    while (check !== null && !(check instanceof HTMLButtonElement)) {
-        check = elem.parentElement;
+    while (check && !(check instanceof HTMLButtonElement)) {
+        check = check.parentElement;
     }
     return check;
 };
 export const onTodoClick = (event) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
-    console.log("got click");
+    event.preventDefault();
+    event.stopPropagation();
     if (!(event.target instanceof HTMLElement))
         return;
     const button = getButton(event.target);
@@ -49,7 +50,28 @@ export const onTodoClick = (event) => __awaiter(void 0, void 0, void 0, function
         case "toggle":
             yield onToggleCompleted(id);
             break;
+        default:
+            break;
     }
+});
+export const onEditEnter = (event) => __awaiter(void 0, void 0, void 0, function* () {
+    if (event.key !== "Enter")
+        return;
+    event.stopPropagation();
+    const input = document.activeElement;
+    if (!(input instanceof HTMLInputElement))
+        return;
+    const parent = input.parentElement;
+    if (!(parent instanceof HTMLLIElement))
+        return;
+    const id = parent.dataset.id;
+    if (id === undefined)
+        return;
+    const todo = parseInt(id);
+    const title = input.value;
+    if (isNaN(todo))
+        return;
+    yield model.editTitle(todo, title);
 });
 const onEditClick = (id, input) => __awaiter(void 0, void 0, void 0, function* () {
     const todo = parseInt(id);
@@ -115,7 +137,6 @@ const completedListItem = ({ id, title }, isEditing) => {
 };
 export const createRenderer = (pending, completed) => {
     return (todos, isEditing) => {
-        console.log("new todos");
         const pendingItems = todos
             .filter(t => !t.completed)
             .map(t => pendingListItem(t, isEditing));

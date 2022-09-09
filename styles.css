@@ -34,6 +34,12 @@ body {
     justify-content: center;
 }
 
+.create-btn {
+    background-color: var(--blue);;
+    color: white;
+    padding: 6px;
+}
+
 .task-lists {
     display: flex;
     justify-content: center;
@@ -67,6 +73,7 @@ body {
     width: 80%;
     display: flex;
     align-items: center;
+    text-align: center;
     justify-content: center;
     text-overflow: ellipsis;
 }

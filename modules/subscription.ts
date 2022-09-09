@@ -1,6 +1,6 @@
-import { Todo } from "./types";
+import { Todo } from "./types.js";
 
-type TodoChange = (todos: readonly Todo[]) => void;
+type TodoChange = (todos: readonly Todo[], isEditing: ReadonlySet<number>) => void;
 
 let subscriptions: TodoChange[] = [];
 
@@ -13,6 +13,6 @@ export const unsubscribe = (id: number) => {
     subscriptions.splice(id, 1);
 }
 
-export const invoke = (todos: readonly Todo[]) => {
-    subscriptions.forEach(s => s(todos));
+export const invoke = (todos: readonly Todo[], isEditing: ReadonlySet<number>) => {
+    subscriptions.forEach(s => s(todos, isEditing));
 }

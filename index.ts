@@ -1,0 +1,25 @@
+import { subscribe } from "./modules/subscription.js";
+import { init } from "./modules/state.js";
+import { createRenderer, onTodoClick, onTodoSubmit } from "./modules/handlers.js";
+
+const create = document.getElementById("create");
+const pending = document.querySelector<HTMLOListElement>("#pending ol");
+const completed = document.querySelector<HTMLOListElement>("#completed ol");
+
+if (pending && completed) {
+    subscribe(createRenderer(pending, completed));
+}
+
+init().then(() => {
+    if (create) {
+        create.onsubmit = onTodoSubmit;
+    }
+
+    if (pending) {
+        pending.onclick = onTodoClick;
+    }
+
+    if (completed) {
+        completed.onclick = onTodoClick;
+    }
+});

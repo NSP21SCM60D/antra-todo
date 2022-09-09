@@ -1,6 +1,6 @@
-import { Todo } from "../types";
+import { Todo } from "../types.js";
 
-const url = "localhost:3000/todos";
+const url = "http://localhost:3000/todos";
 
 export const getTodos = async () => {
     const response = await fetch(url);

@@ -1,6 +1,8 @@
-import { Todo } from "./types";
-import * as api from "./api/todos";
-import { subscribe, invoke } from "./subscription";
+import { Todo } from "./types.js";
+import * as api from "./api/todos.js";
+import { subscribe, invoke } from "./subscription.js";
+
+const _isEditing = new Set<number>();
 
 let _todos: readonly Todo[] | undefined;
 
@@ -13,6 +15,12 @@ const getTodos = async () => {
     return _todos as readonly Todo[];
 };
 
+export const init = async () => {
+    const todos = await getTodos();
+    
+    invoke(todos, _isEditing);
+}
+
 export const createTodo = async (title: string) => {
     const newTodo = await api.addTodo(title);
     if (newTodo === null) return;
@@ -20,7 +28,7 @@ export const createTodo = async (title: string) => {
     const todos = await getTodos();
     const updated = [...todos, newTodo];
 
-    invoke(updated);
+    invoke(updated, _isEditing);
 };
 
 
@@ -31,7 +39,17 @@ export const editTitle = async (id: number, title: string) => {
     const todos = await getTodos();
     const updated = todos.map(t => t.id === edited.id ? edited : t);
 
-    invoke(updated);
+    _isEditing.delete(id);
+
+    invoke(updated, _isEditing);
+};
+
+export const startEdit = async (id: number) => {
+    const todos = await getTodos();
+
+    _isEditing.add(id);
+
+    invoke(todos, _isEditing);
 };
 
 export const toggleCompleted = async (id: number) => {
@@ -41,7 +59,9 @@ export const toggleCompleted = async (id: number) => {
     const todos = await getTodos();
     const updated = todos.map(t => t.id === edited.id ? edited : t);
 
-    invoke(updated);
+    _isEditing.delete(id);
+
+    invoke(updated, _isEditing);
 };
 
 export const deleteTodo = async (id: number) => {
@@ -51,5 +71,7 @@ export const deleteTodo = async (id: number) => {
     const todos = await getTodos();
     const removed = todos.filter(t => t.id !== id);
 
-    invoke(removed);
+    _isEditing.delete(id);
+
+    invoke(removed, _isEditing);
 };

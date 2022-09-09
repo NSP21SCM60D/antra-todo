@@ -7,8 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import * as api from "./api/todos.js";
-import { subscribe, invoke } from "./subscription.js";
+import * as api from "./api/todos";
+import { subscribe, invoke } from "./subscription";
 const _isEditing = new Set();
 let _todos;
 const getTodos = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -18,10 +18,7 @@ const getTodos = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     return _todos;
 });
-export const init = () => __awaiter(void 0, void 0, void 0, function* () {
-    const todos = yield getTodos();
-    invoke(todos, _isEditing);
-});
+export const init = () => __awaiter(void 0, void 0, void 0, function* () { const _ = yield getTodos(); });
 export const createTodo = (title) => __awaiter(void 0, void 0, void 0, function* () {
     const newTodo = yield api.addTodo(title);
     if (newTodo === null)

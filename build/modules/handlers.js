@@ -28,19 +28,19 @@ const getButton = (elem) => {
 };
 export const onTodoClick = (event) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
+    console.log("got click");
     if (!(event.target instanceof HTMLElement))
         return;
     const button = getButton(event.target);
     if (button === null)
         return;
-    console.log("got click", button);
     const { dataset: { type }, parentElement: parent } = button;
     const id = parent === null || parent === void 0 ? void 0 : parent.dataset.id;
     if (id === undefined)
         return;
     switch (type) {
         case "edit":
-            const input = (_c = parent === null || parent === void 0 ? void 0 : parent.getElementsByTagName("input").namedItem("todo")) !== null && _c !== void 0 ? _c : null;
+            const input = (_c = parent === null || parent === void 0 ? void 0 : parent.getElementsByTagName("input").item(0)) !== null && _c !== void 0 ? _c : null;
             yield onEditClick(id, input);
             break;
         case "delete":
@@ -73,7 +73,6 @@ const onToggleCompleted = (id) => __awaiter(void 0, void 0, void 0, function* ()
     const todo = parseInt(id);
     if (isNaN(todo))
         return;
-    console.log("toggle complete", id);
     yield model.toggleCompleted(todo);
 });
 const pendingListItem = ({ id, title }, isEditing) => {
@@ -116,6 +115,7 @@ const completedListItem = ({ id, title }, isEditing) => {
 };
 export const createRenderer = (pending, completed) => {
     return (todos, isEditing) => {
+        console.log("new todos");
         const pendingItems = todos
             .filter(t => !t.completed)
             .map(t => pendingListItem(t, isEditing));

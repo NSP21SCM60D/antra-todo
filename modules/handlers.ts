@@ -23,12 +23,11 @@ const getButton = (elem: HTMLElement): HTMLButtonElement | null => {
 };
 
 export const onTodoClick = async (event: Event) => {
+    console.log("got click");
     if (!(event.target instanceof HTMLElement)) return;
 
     const button = getButton(event.target);
     if (button === null) return;
-
-    console.log("got click", button);
 
     const { dataset: { type }, parentElement: parent } = button;
     const id = parent?.dataset.id;
@@ -37,7 +36,7 @@ export const onTodoClick = async (event: Event) => {
 
     switch (type) {
         case "edit":
-            const input = parent?.getElementsByTagName("input").namedItem("todo") ?? null;
+            const input = parent?.getElementsByTagName("input").item(0) ?? null;
             await onEditClick(id, input);
             break;
 
@@ -77,8 +76,6 @@ const onDeleteClick = async (id: string) => {
 const onToggleCompleted = async (id: string) => {
     const todo = parseInt(id);
     if (isNaN(todo)) return;
-
-    console.log("toggle complete", id);
 
     await model.toggleCompleted(todo);
 };
@@ -127,6 +124,8 @@ const completedListItem = ({ id, title }: Todo, isEditing: ReadonlySet<number>) 
 
 export const createRenderer = (pending: HTMLOListElement, completed: HTMLOListElement) => {
     return (todos: readonly Todo[], isEditing: ReadonlySet<number>) => {
+        console.log("new todos");
+
         const pendingItems = todos
             .filter(t => !t.completed)
             .map(t => pendingListItem(t, isEditing));

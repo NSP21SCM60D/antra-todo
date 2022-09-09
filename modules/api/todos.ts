@@ -37,7 +37,7 @@ export const toggleStatus = async (id: number) => {
     const findResponse = await fetch(`${url}/${id}`);
 
     if (!findResponse.ok) return null;
-    const { isCompleted: completed } = await findResponse.json() as Todo;
+    const { completed: completed } = await findResponse.json() as Todo;
 
     const toggleResponse = await fetch(`${url}/${id}`, {
         method: "PATCH",

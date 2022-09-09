@@ -14,12 +14,23 @@ export const onTodoSubmit = async (event: SubmitEvent) => {
     event.target.todo.value = "";
 };
 
+const getButton = (elem: HTMLElement): HTMLButtonElement | null => {
+    let check: HTMLElement | null = elem;
+    while (check !== null && !(check instanceof HTMLButtonElement)) {
+        check = elem.parentElement;
+    }
+    return check;
+};
+
 export const onTodoClick = async (event: Event) => {
     if (!(event.target instanceof HTMLElement)) return;
 
-    console.log("got click", event.target);
+    const button = getButton(event.target);
+    if (button === null) return;
 
-    const { dataset: { type }, parentElement: parent } = event.target;
+    console.log("got click", button);
+
+    const { dataset: { type }, parentElement: parent } = button;
     const id = parent?.dataset.id;
 
     if (id === undefined) return;
@@ -66,6 +77,8 @@ const onDeleteClick = async (id: string) => {
 const onToggleCompleted = async (id: string) => {
     const todo = parseInt(id);
     if (isNaN(todo)) return;
+
+    console.log("toggle complete", id);
 
     await model.toggleCompleted(todo);
 };
@@ -115,11 +128,11 @@ const completedListItem = ({ id, title }: Todo, isEditing: ReadonlySet<number>) 
 export const createRenderer = (pending: HTMLOListElement, completed: HTMLOListElement) => {
     return (todos: readonly Todo[], isEditing: ReadonlySet<number>) => {
         const pendingItems = todos
-            .filter(t => !t.isCompleted)
+            .filter(t => !t.completed)
             .map(t => pendingListItem(t, isEditing));
 
         const completedItems = todos
-            .filter(t => t.isCompleted)
+            .filter(t => t.completed)
             .map(t => completedListItem(t, isEditing));
 
         pending.innerHTML = pendingItems.join('\n');

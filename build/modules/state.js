@@ -8,57 +8,74 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import * as api from "./api/todos.js";
-import { subscribe, invoke } from "./subscription.js";
+const _todos = [];
+let _filter = null;
 const _isEditing = new Set();
-let _todos;
-const getTodos = () => __awaiter(void 0, void 0, void 0, function* () {
-    if (_todos === undefined) {
-        subscribe((ts) => _todos = ts);
-        _todos = yield api.getTodos();
+const _subscriptions = new Set();
+export const loadTodos = () => __awaiter(void 0, void 0, void 0, function* () {
+    _todos.push(...yield api.getTodos());
+    invoke();
+});
+export const subscribe = (listener) => {
+    _subscriptions.add(listener);
+    return () => {
+        _subscriptions.delete(listener);
+    };
+};
+const invoke = () => {
+    for (const sub of _subscriptions) {
+        setTimeout(sub, 0, _todos, _isEditing, _filter);
     }
-    return _todos;
-});
-export const init = () => __awaiter(void 0, void 0, void 0, function* () {
-    const todos = yield getTodos();
-    invoke(todos, _isEditing);
-});
+};
 export const createTodo = (title) => __awaiter(void 0, void 0, void 0, function* () {
     const newTodo = yield api.addTodo(title);
     if (newTodo === null)
         return;
-    const todos = yield getTodos();
-    const updated = [...todos, newTodo];
-    invoke(updated, _isEditing);
+    _todos.push(newTodo);
+    invoke();
 });
+export const setFilter = (filter) => {
+    _filter = filter;
+    invoke();
+};
 export const editTitle = (id, title) => __awaiter(void 0, void 0, void 0, function* () {
     const edited = yield api.editTitle(id, title);
     if (edited === null)
         return;
-    const todos = yield getTodos();
-    const updated = todos.map(t => t.id === edited.id ? edited : t);
+    const index = findIndex(id);
+    if (index === null)
+        return;
+    _todos[index] = edited;
     _isEditing.delete(id);
-    invoke(updated, _isEditing);
+    invoke();
 });
 export const startEdit = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const todos = yield getTodos();
     _isEditing.add(id);
-    invoke(todos, _isEditing);
+    invoke();
 });
 export const toggleCompleted = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const edited = yield api.toggleStatus(id);
     if (edited === null)
         return;
-    const todos = yield getTodos();
-    const updated = todos.map(t => t.id === edited.id ? edited : t);
+    const index = findIndex(id);
+    if (index === null)
+        return;
+    _todos[index] = edited;
     _isEditing.delete(id);
-    invoke(updated, _isEditing);
+    invoke();
 });
 export const deleteTodo = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const isDeleted = yield api.deleteTodo(id);
     if (!isDeleted)
         return;
-    const todos = yield getTodos();
-    const removed = todos.filter(t => t.id !== id);
+    const index = findIndex(id);
+    if (index === null)
+        return;
+    _todos.splice(index, 1);
     _isEditing.delete(id);
-    invoke(removed, _isEditing);
+    invoke();
 });
+const findIndex = (id) => {
+    const initial = null;
+    return _todos.reduce((idx, t, i) => t.id === id ? i : idx, initial);
+};

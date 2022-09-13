@@ -1,4 +1,3 @@
-import { Todo } from "./types.js";
 import * as model from "./state.js";
 
 export const onTodoSubmit = async (event: SubmitEvent) => {
@@ -14,45 +13,15 @@ export const onTodoSubmit = async (event: SubmitEvent) => {
     event.target.todo.value = "";
 };
 
-const getButton = (elem: HTMLElement): HTMLButtonElement | null => {
-    let check: HTMLElement | null = elem;
-    while (check && !(check instanceof HTMLButtonElement)) {
-        check = check.parentElement;
-    }
-    return check;
-};
+export const onFilterSubmit = (event: SubmitEvent) => {
+    if (!(event.target instanceof HTMLFormElement)) return;
 
-export const onTodoClick = async (event: Event) => {
     event.preventDefault();
-    event.stopPropagation();
 
-    if (!(event.target instanceof HTMLElement)) return;
+    const filter: string | null = event.target.filter?.value ?? null;
+    if (!filter) return;
 
-    const button = getButton(event.target);
-    if (button === null) return;
-
-    const { dataset: { type }, parentElement: parent } = button;
-    const id = parent?.dataset.id;
-
-    if (id === undefined) return;
-
-    switch (type) {
-        case "edit":
-            const input = parent?.getElementsByTagName("input").item(0) ?? null;
-            await onEditClick(id, input);
-            break;
-
-        case "delete":
-            await onDeleteClick(id);
-            break;
-
-        case "toggle":
-            await onToggleCompleted(id);
-            break;
-
-        default:
-            break;
-    }
+    model.setFilter(filter);
 };
 
 export const onEditEnter = async (event: KeyboardEvent) => {
@@ -79,20 +48,58 @@ export const onEditEnter = async (event: KeyboardEvent) => {
     await model.editTitle(todo, title);
 };
 
-const onEditClick = async (id: string, input: HTMLInputElement | null) => {
+export const onTodoClick = async (event: Event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!(event.target instanceof HTMLElement)) return;
+
+    const button = getButton(event.target);
+    if (button === null) return;
+
+    const { dataset: { type }, parentElement: parent } = button;
+    const id = parent?.dataset.id;
+
+    if (id === undefined) return;
+
+    switch (type) {
+        case "edit":
+            const title = parent?.getElementsByTagName("input").item(0)?.value;
+            await onEditClick(id, title ?? null);
+            break;
+
+        case "delete":
+            await onDeleteClick(id);
+            break;
+
+        case "toggle":
+            await onToggleCompleted(id);
+            break;
+
+        default:
+            break;
+    }
+};
+
+const getButton = (elem: HTMLElement) => {
+    let check: HTMLElement | null = elem;
+
+    while (check && !(check instanceof HTMLButtonElement)) {
+        check = check.parentElement;
+    }
+
+    return check;
+};
+
+const onEditClick = async (id: string, title: string | null) => {
     const todo = parseInt(id);
     if (isNaN(todo)) return;
 
-    const isStartingEdit = input === null;
-
-    if (isStartingEdit) {
+    if (title === null) {
         await model.startEdit(todo);
-        return;
+    } else {
+        await model.editTitle(todo, title);
     }
-
-    const title = input.value;
-
-    await model.editTitle(todo, title);
 };
 
 const onDeleteClick = async (id: string) => {
@@ -107,61 +114,4 @@ const onToggleCompleted = async (id: string) => {
     if (isNaN(todo)) return;
 
     await model.toggleCompleted(todo);
-};
-
-const pendingListItem = ({ id, title }: Todo, isEditing: ReadonlySet<number>) => {
-    const text = isEditing.has(id)
-        ? `<input type="text" value="${title}"/>`
-        : `<p>${title}</p>`;
-
-    return `
-        <li data-id="${id}">
-            ${text}
-            <button data-type="edit" type="button">
-                <img src="./assets/edit.svg" alt="Edit" />
-            </button>
-
-            <button data-type="delete" type="button">
-                <img src="./assets/delete.svg" alt="Delete" />
-            </button>
-
-            <button data-type="toggle" type="button">
-                <img src="./assets/right.svg" alt="Right Arrow" />
-            </button>
-        </li>`;
-}
-
-const completedListItem = ({ id, title }: Todo, isEditing: ReadonlySet<number>) => {
-    const text = isEditing.has(id)
-        ? `<input type="text" value="${title}"/>`
-        : `<p>${title}</p>`;
-
-    return `
-        <li data-id="${id}">
-            <button data-type="toggle" type="button">
-                <img src="./assets/left.svg" alt="Left Arrow" />
-            </button>
-            ${text}
-            <button data-type="edit" type="button">
-                <img src="./assets/edit.svg" alt="Edit" />
-            </button>
-            <button data-type="delete" type="button">
-                <img src="./assets/delete.svg" alt="Delete" />
-            </button>
-        </li>`;
-};
-
-export const createRenderer = (pending: HTMLOListElement, completed: HTMLOListElement) => {
-    return (todos: readonly Todo[], isEditing: ReadonlySet<number>) => {
-        const pendingItems = todos
-            .filter(t => !t.completed)
-            .map(t => pendingListItem(t, isEditing));
-
-        const completedItems = todos
-            .filter(t => t.completed)
-            .map(t => completedListItem(t, isEditing));
-
-        pending.innerHTML = pendingItems.join('\n');
-        completed.innerHTML = completedItems.join('\n');
-    };
 };

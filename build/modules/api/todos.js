@@ -38,11 +38,11 @@ export const toggleStatus = (id) => __awaiter(void 0, void 0, void 0, function* 
     const findResponse = yield fetch(`${url}/${id}`);
     if (!findResponse.ok)
         return null;
-    const { completed: completed } = yield findResponse.json();
+    const { completed } = yield findResponse.json();
     const toggleResponse = yield fetch(`${url}/${id}`, {
         method: "PATCH",
         headers: { "Content-type": "application/json; charset=UTF-8" },
-        body: JSON.stringify({ completed: !completed })
+        body: JSON.stringify({ completed: !completed }),
     });
     if (!toggleResponse.ok)
         return null;

@@ -1,6 +1,6 @@
-import { subscribe } from "./modules/subscription.js";
-import { init } from "./modules/state.js";
-import { createRenderer, onTodoClick, onTodoSubmit, onEditEnter } from "./modules/handlers.js";
+import createRenderer from "./modules/render.js";
+import { loadTodos, subscribe } from "./modules/state.js";
+import { onEditEnter, onTodoClick, onFilterSubmit, onTodoSubmit } from "./modules/handlers.js";
 
 const pending = document.querySelector<HTMLOListElement>("#pending ol");
 const completed = document.querySelector<HTMLOListElement>("#completed ol");
@@ -10,10 +10,15 @@ if (pending && completed) {
 }
 
 const create = document.getElementById("create");
+const filter = document.getElementById("filter");
 
-init().then(() => {
+loadTodos().then(() => {
     if (create) {
         create.onsubmit = onTodoSubmit;
+    }
+
+    if (filter) {
+        filter.onsubmit = onFilterSubmit;
     }
 
     if (pending) {

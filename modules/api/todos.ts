@@ -6,7 +6,7 @@ export const getTodos = async () => {
     const response = await fetch(url);
     if (!response.ok) return [];
 
-    return await response.json() as Todo[];
+    return await response.json() as readonly Todo[];
 };
 
 export const addTodo = async (title: string) => {
@@ -37,12 +37,12 @@ export const toggleStatus = async (id: number) => {
     const findResponse = await fetch(`${url}/${id}`);
 
     if (!findResponse.ok) return null;
-    const { completed: completed } = await findResponse.json() as Todo;
+    const { completed } = await findResponse.json() as Todo;
 
     const toggleResponse = await fetch(`${url}/${id}`, {
         method: "PATCH",
         headers: { "Content-type": "application/json; charset=UTF-8" },
-        body: JSON.stringify({ completed: !completed })
+        body: JSON.stringify({ completed: !completed }),
     });
 
     if (!toggleResponse.ok) return null;

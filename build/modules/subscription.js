@@ -1,11 +1,13 @@
-let subscriptions = [];
+const _subscriptions = [];
 export const subscribe = (listener) => {
-    subscriptions.push(listener);
-    return subscriptions.length - 1;
+    _subscriptions.push(listener);
+    return _subscriptions.length - 1;
 };
 export const unsubscribe = (id) => {
-    subscriptions.splice(id, 1);
+    _subscriptions.splice(id, 1);
 };
 export const invoke = (todos, isEditing) => {
-    subscriptions.forEach(s => s(todos, isEditing));
+    for (const sub of _subscriptions) {
+        setTimeout(() => sub(todos, isEditing));
+    }
 };

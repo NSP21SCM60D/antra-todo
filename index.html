@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
-    <link rel="stylesheet" href="./styles.css"/>
+    <link rel="stylesheet" href="./styles.css" />
     <script type="module" src="./build/index.js"></script>
 </head>
+
 <body>
     <main class="container">
-        <header>
+        <header class="search">
             <form id="create" class="tasks">
                 <input type="text" name="todo" placeholder="Create New" />
+                <button type="submit" class="create-btn">submit</button>
+            </form>
+            <form id="filter" class="tasks">
+                <input type="text" name="filter" placeholder="Filter Title" />
                 <button type="submit" class="create-btn">submit</button>
             </form>
         </header>
@@ -29,4 +35,5 @@
         </div>
     </main>
 </body>
+
 </html>

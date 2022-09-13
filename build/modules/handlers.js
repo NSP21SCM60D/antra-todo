@@ -24,11 +24,8 @@ export const onFilterSubmit = (event) => {
     if (!(event.target instanceof HTMLFormElement))
         return;
     event.preventDefault();
-    const filter = (_b = (_a = event.target.filter) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : null;
-    if (!filter)
-        return;
+    const filter = (_b = (_a = event.target.filter) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "";
     model.setFilter(filter);
-    event.target.filter.value = "";
 };
 export const onEditEnter = (event) => __awaiter(void 0, void 0, void 0, function* () {
     if (event.key !== "Enter")
@@ -89,7 +86,7 @@ const onEditClick = (id, title) => __awaiter(void 0, void 0, void 0, function* (
     if (isNaN(todo))
         return;
     if (title === null) {
-        yield model.startEdit(todo);
+        model.startEdit(todo);
     }
     else {
         yield model.editTitle(todo, title);

@@ -1,9 +1,9 @@
 import * as api from "./api/todos.js";
 import { Todo, TodoChange } from "./types.js";
 
-const _todos: Todo[] = [];
+let _filter: string | undefined;
 
-let _filter: string | null = null;
+const _todos: Todo[] = [];
 
 const _isEditing = new Set<number>();
 
@@ -38,8 +38,8 @@ export const createTodo = async (title: string) => {
     invoke();
 };
 
-export const setFilter = (filter: string | null) => {
-    _filter = filter;
+export const setFilter = (filter: string) => {
+    _filter = filter === "" ? undefined : filter;
 
     invoke();
 };
@@ -57,7 +57,7 @@ export const editTitle = async (id: number, title: string) => {
     invoke();
 };
 
-export const startEdit = async (id: number) => {
+export const startEdit = (id: number) => {
     _isEditing.add(id);
 
     invoke();

@@ -7,5 +7,5 @@ export interface Todo {
 export type TodoChange = (
     todos: readonly Todo[],
     isEditing: ReadonlySet<number>,
-    filter: string | null,
+    filter: string | undefined,
 ) => void;

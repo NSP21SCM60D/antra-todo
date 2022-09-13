@@ -18,8 +18,7 @@ export const onFilterSubmit = (event: SubmitEvent) => {
 
     event.preventDefault();
 
-    const filter: string | null = event.target.filter?.value ?? null;
-    if (!filter) return;
+    const filter: string = event.target.filter?.value ?? "";
 
     model.setFilter(filter);
 };
@@ -96,7 +95,7 @@ const onEditClick = async (id: string, title: string | null) => {
     if (isNaN(todo)) return;
 
     if (title === null) {
-        await model.startEdit(todo);
+        model.startEdit(todo);
     } else {
         await model.editTitle(todo, title);
     }

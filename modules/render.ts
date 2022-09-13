@@ -4,15 +4,15 @@ const createRenderer = (
     pending: HTMLOListElement,
     completed: HTMLOListElement,
 ) => {
-    return (todos: readonly Todo[], isEditing: ReadonlySet<number>, filter: string | null) => {
+    return (todos: readonly Todo[], isEditing: ReadonlySet<number>, filter: string | undefined) => {
         const pendingItems = todos
             .filter((t) => !t.completed)
-            .filter((t) => t.title.includes(filter ?? ""))
+            .filter((t) => !filter || t.title.includes(filter))
             .map((t) => pendingListItem(t, isEditing));
 
         const completedItems = todos
             .filter((t) => t.completed)
-            .filter((t) => t.title.includes(filter ?? ""))
+            .filter((t) => !filter || t.title.includes(filter))
             .map((t) => completedListItem(t, isEditing));
 
         pending.innerHTML = pendingItems.join("\n");

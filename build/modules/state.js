@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import * as api from "./api/todos.js";
+let _filter;
 const _todos = [];
-let _filter = null;
 const _isEditing = new Set();
 const _subscriptions = new Set();
 export const loadTodos = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -35,7 +35,7 @@ export const createTodo = (title) => __awaiter(void 0, void 0, void 0, function*
     invoke();
 });
 export const setFilter = (filter) => {
-    _filter = filter;
+    _filter = filter === "" ? undefined : filter;
     invoke();
 };
 export const editTitle = (id, title) => __awaiter(void 0, void 0, void 0, function* () {
@@ -49,10 +49,10 @@ export const editTitle = (id, title) => __awaiter(void 0, void 0, void 0, functi
     _isEditing.delete(id);
     invoke();
 });
-export const startEdit = (id) => __awaiter(void 0, void 0, void 0, function* () {
+export const startEdit = (id) => {
     _isEditing.add(id);
     invoke();
-});
+};
 export const toggleCompleted = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const edited = yield api.toggleStatus(id);
     if (edited === null)

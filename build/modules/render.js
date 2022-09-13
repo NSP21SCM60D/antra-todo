@@ -2,11 +2,11 @@ const createRenderer = (pending, completed) => {
     return (todos, isEditing, filter) => {
         const pendingItems = todos
             .filter((t) => !t.completed)
-            .filter((t) => t.title.includes(filter !== null && filter !== void 0 ? filter : ""))
+            .filter((t) => !filter || t.title.includes(filter))
             .map((t) => pendingListItem(t, isEditing));
         const completedItems = todos
             .filter((t) => t.completed)
-            .filter((t) => t.title.includes(filter !== null && filter !== void 0 ? filter : ""))
+            .filter((t) => !filter || t.title.includes(filter))
             .map((t) => completedListItem(t, isEditing));
         pending.innerHTML = pendingItems.join("\n");
         completed.innerHTML = completedItems.join("\n");
